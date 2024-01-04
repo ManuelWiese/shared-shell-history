@@ -94,7 +94,7 @@ def display(stdscr, command_menu_entries):
             if current_row >= top_row + stdscr.getmaxyx()[0] - 1:
                 top_row += 1
         elif key == curses.KEY_ENTER or key in [10, 13]:
-            return command_menu_entries[current_row].command  # Return the selected command
+            return filtered_command_menu_entries[current_row].command  # Return the selected command
         elif key == curses.KEY_BACKSPACE:
             search_string = search_string[:-1]
         elif key >= 32 and key <= 126:  # ASCII printable characters
