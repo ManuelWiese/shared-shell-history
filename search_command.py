@@ -3,13 +3,18 @@ import argparse
 import subprocess
 import json
 
+from typing import List, Dict
+
+from menu_entry import Command, Host, User, MenuEntry
+
+
 def main(stdscr):
     arguments = parse_arguments()
-    commands = get_commands(
+    command_menu_entries = get_command_menu_entries(
         arguments.db_url,
         user=arguments.user
     )
-    selected_command = display(stdscr, commands)
+    selected_command = display(stdscr, command_menu_entries)
 
     with open(arguments.tmp_file, "w") as f:
         f.write(selected_command)
@@ -23,8 +28,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def get_commands(db_url, user=None, host=None): #None means any
-
+def get_command_menu_entries(db_url, user=None, host=None): #None means any
     if user is None and host is None:
         where_clause = ""
     else:
@@ -55,10 +59,12 @@ def get_commands(db_url, user=None, host=None): #None means any
     for command in commands:
         command["command"] = command["command"].strip()
 
+    commands = [Command.from_dict(command) for command in commands]
+
     return commands
 
 
-def display(stdscr, commands):
+def display(stdscr, command_menu_entries):
     # Turn off cursor blinking
     curses.curs_set(0)
 
@@ -72,8 +78,8 @@ def display(stdscr, commands):
 
 
     # Initial display
-    filtered_commands = commands
-    print_menu(stdscr, current_row, filtered_commands, top_row)
+    filtered_command_menu_entries = command_menu_entries
+    print_menu(stdscr, current_row, filtered_command_menu_entries, top_row)
     print_search_bar(stdscr, search_string)
 
     while True:
@@ -83,41 +89,40 @@ def display(stdscr, commands):
             current_row -= 1
             if current_row < top_row:
                 top_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(filtered_commands) - 1:
+        elif key == curses.KEY_DOWN and current_row < len(filtered_command_menu_entries) - 1:
             current_row += 1
             if current_row >= top_row + stdscr.getmaxyx()[0] - 1:
                 top_row += 1
         elif key == curses.KEY_ENTER or key in [10, 13]:
-            return commands[current_row]["command"]  # Return the selected command
+            return command_menu_entries[current_row].command  # Return the selected command
         elif key == curses.KEY_BACKSPACE:
             search_string = search_string[:-1]
         elif key >= 32 and key <= 126:  # ASCII printable characters
             search_string += chr(key)
             current_row = 0
+        elif key == 27 or key == curses.KEY_F1:
+            return ""
+        
 
         # Update the display
-        filtered_commands = filter_commands(commands, search_string)
-        print_menu(stdscr, current_row, filtered_commands, top_row)
+        filtered_command_menu_entries = filter_commands(command_menu_entries, search_string)
+        print_menu(stdscr, current_row, filtered_command_menu_entries, top_row)
         print_search_bar(stdscr, search_string)
 
 
-def print_menu(stdscr, selected_row_idx, commands, top_row):
+def print_menu(stdscr, selected_row_idx, menu_entries, top_row) -> None:
     stdscr.clear()
     h, w = stdscr.getmaxyx()
-    for idx, row in enumerate(commands[top_row:top_row+h]):
+    for idx, entry in enumerate(menu_entries[top_row:top_row+h]):
         x = 0
         y = idx
         if idx + top_row == selected_row_idx:
             stdscr.attron(curses.color_pair(1))
-            stdscr.addstr(y, x, row_to_str(row))
+            stdscr.addstr(y, x, str(entry))
             stdscr.attroff(curses.color_pair(1))
         else:
-            stdscr.addstr(y, x, row_to_str(row))
+            stdscr.addstr(y, x, str(entry))
     stdscr.refresh()
-
-
-def row_to_str(row):
-    return f"{row['command']}"
 
 
 def print_search_bar(stdscr, search_string):
@@ -127,7 +132,7 @@ def print_search_bar(stdscr, search_string):
 
 
 def filter_commands(commands, search_string):
-    return [command for command in commands if search_string.lower() in command["command"].lower()]
+    return [command for command in commands if search_string.lower() in command.command.lower()]
 
 
 # Run the program
