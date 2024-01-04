@@ -85,7 +85,7 @@ def display(stdscr, commands):
                 top_row -= 1
         elif key == curses.KEY_DOWN and current_row < len(filtered_commands) - 1:
             current_row += 1
-            if current_row >= top_row + stdscr.getmaxyx()[0]:
+            if current_row >= top_row + stdscr.getmaxyx()[0] - 1:
                 top_row += 1
         elif key == curses.KEY_ENTER or key in [10, 13]:
             return commands[current_row]["command"]  # Return the selected command
