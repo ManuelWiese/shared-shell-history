@@ -142,6 +142,22 @@ __in_prompt_command() {
 }
 
 
+# __latest_history_id
+#
+# Retrieves the ID of the most recent command in the Bash history.
+#
+# This function uses the `history` builtin to obtain the latest command's ID.
+# It temporarily sets the locale to 'C' and disables the HISTTIMEFORMAT to ensure
+# consistent parsing of the history output. The function then uses `awk` to extract
+# and return the command ID.
+#
+# Returns:
+#   The ID of the most recent command in the Bash history.
+#
+# Usage:
+#   latest_id=$(__latest_history_id)
+#   echo "The most recent command ID is: $latest_id"
+#
 __latest_history_id() {
     export LC_ALL=C
     HISTTIMEFORMAT='' builtin history 1 | awk '{ print $1 }'
