@@ -143,10 +143,8 @@ __in_prompt_command() {
 
 
 __latest_history_id() {
-    echo $(
-        export LC_ALL=C
-        HISTTIMEFORMAT='' builtin history 1 | awk '{ print $1 }'
-	)
+    export LC_ALL=C
+    HISTTIMEFORMAT='' builtin history 1 | awk '{ print $1 }'
 }
 
 last_history_id=$(__latest_history_id)
