@@ -223,12 +223,14 @@ __shared_shell_history_preexec() {
 
     local this_command_history_id=$(__latest_history_id)
     if [[ "$this_command_history_id" == "$last_history_id" ]]; then
+	# If no new command was added to the history (e.g. a key combination was pressed)
+	# do not capture the last command, this would add duplicates.
         return
     fi
 
     local this_command=$(__latest_history_command)
-
     "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
+
     last_history_id=$this_command_history_id
 }
 
