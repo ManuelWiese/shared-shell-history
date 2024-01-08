@@ -184,6 +184,25 @@ __latest_history_command() {
 }
 
 
+# __submit_last_command_to_database
+#
+# Submits the latest command from the Bash history to a PostgreSQL database.
+#
+# This function retrieves the most recent command entered in the Bash shell using the 
+# __latest_history_command function. It then calls an external script, 'submit_to_database.sh',
+# located in the SHARED_SHELL_HISTORY_BASE_DIR directory, passing it the database URL and the 
+# command to be submitted.
+#
+# The SHARED_SHELL_HISTORY_DB_URL variable should contain the PostgreSQL database URL.
+#
+# Usage:
+#   __submit_last_command_to_database
+#
+__submit_last_command_to_database() {
+    local this_command=$(__latest_history_command)
+    "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
+}
+
 SHARED_SHELL_HISTORY_LAST_ID=$(__latest_history_id)
 
 
@@ -217,17 +236,16 @@ __shared_shell_history_preexec() {
         return
     fi
 
-    local this_command_history_id=$(__latest_history_id)
-    if [[ "$this_command_history_id" == "$SHARED_SHELL_HISTORY_LAST_ID" ]]; then
+    local latest_history_id=$(__latest_history_id)
+    if [[ "$latest_history_id" == "$SHARED_SHELL_HISTORY_LAST_ID" ]]; then
 	# If no new command was added to the history (e.g. a key combination was pressed)
 	# do not capture the last command, this would add duplicates.
         return
+    else
+	SHARED_SHELL_HISTORY_LAST_ID=$latest_history_id
     fi
 
-    local this_command=$(__latest_history_command)
-    "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
-
-    SHARED_SHELL_HISTORY_LAST_ID=$this_command_history_id
+    __submit_last_command_to_database
 }
 
 trap '__shared_shell_history_preexec' DEBUG
