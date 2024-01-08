@@ -74,6 +74,23 @@ else
     PROMPT_COMMAND+=$'\n__enable_command_capture'
 fi
 
+# __trim_whitespace
+#
+# Trims leading and trailing whitespace from a given string.
+#
+# This function takes two arguments:
+#   1. var: A variable name where the trimmed result will be stored.
+#   2. text: The string that needs whitespace trimming.
+#
+# If 'text' is not provided, the function will default to an empty string.
+# The result of the trimming operation is stored in the variable named by 'var'.
+# This function uses Bash's parameter expansion capabilities to remove 
+# whitespace without spawning subshells or using external commands like 'sed' or 'awk'.
+#
+# Usage:
+#   __trim_whitespace result_var "  some text with space  "
+#   echo $result_var  # Output: "some text with space"
+#
 __trim_whitespace() {
     local var=${1:?} text=${2:-}
     text="${text#"${text%%[![:space:]]*}"}"   # remove leading whitespace characters
