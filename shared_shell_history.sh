@@ -202,15 +202,12 @@ __shared_shell_history_preexec() {
     if [[ -z "${__command_capture_enabled:-}" ]]; then
 	# command capture is disabled
         return
-    else
-        # If we're in a subshell, then the prompt won't be re-displayed to put
-        # us back into interactive mode, so let's not set the variable back.
-        # In other words, if you have a subshell like
-        #   (sleep 1; sleep 2)
-        # You want to see the 'sleep 2' as a set_command_title as well.
-        if [[ 0 -eq "${BASH_SUBSHELL:-}" ]]; then
-            __disable_command_capture
-        fi
+    fi
+
+    if [[ 0 -eq "${BASH_SUBSHELL:-}" ]]; then
+	# Disable command capture for the following commands if we are in a subshell
+	# The current/first command is captured
+        __disable_command_capture
     fi
 
     if  __in_prompt_command "${BASH_COMMAND:-}"; then
