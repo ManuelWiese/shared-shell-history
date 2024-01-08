@@ -195,13 +195,12 @@ __shared_shell_history_preexec() {
     local __inside_preexec=1
 
     if [[ -n "${COMP_LINE:-}" ]]; then
-        # We're in the middle of a completer. This obviously can't be
-        # an interactively issued command.
+        # We're in the middle of a completer.
+	# This obviously can't be an issued command.
         return
     fi
     if [[ -z "${__command_capture_enabled:-}" ]]; then
-        # We're doing something related to displaying the prompt.  Let the
-        # prompt set the title instead of me.
+	# command capture is disabled
         return
     else
         # If we're in a subshell, then the prompt won't be re-displayed to put
@@ -216,7 +215,7 @@ __shared_shell_history_preexec() {
 
     if  __in_prompt_command "${BASH_COMMAND:-}"; then
         # If we're executing something inside our prompt_command then we don't
-        # want to call preexec. Bash prior to 3.1 can't detect this at all :/
+        # want to call preexec
         __disable_command_capture
         return
     fi
