@@ -163,6 +163,27 @@ __latest_history_id() {
     HISTTIMEFORMAT='' builtin history 1 | awk '{ print $1 }'
 }
 
+# __latest_history_command
+#
+# Retrieves the latest command from the Bash history.
+#
+# This function fetches the most recent command entered in the Bash shell. 
+# It uses the `history` builtin to get the command and `sed` to parse out 
+# the command text, excluding its history ID and any leading spaces. 
+#
+# Returns:
+#   The most recent command from the Bash history.
+#
+# Usage:
+#   latest_command=$(__latest_history_command)
+#   echo "The most recent command is: $latest_command"
+#
+__latest_history_command() {
+    export LC_ALL=C
+    HISTTIMEFORMAT='' builtin history 1 | sed '1 s/^ *[0-9][0-9]*[* ] //'
+}
+
+
 last_history_id=$(__latest_history_id)
 
 
@@ -200,21 +221,12 @@ __shared_shell_history_preexec() {
         return
     fi
 
-    # we can get the command using 'builtin history 1'
-    # save this in a local variable called this_command
-    # Remove timestamp using HISTTIMEFORMAT=''
-    # Remove the command-number using sed
-    local this_command
-
-    this_command=$(
-        export LC_ALL=C
-        HISTTIMEFORMAT='' builtin history 1 | sed '1 s/^ *[0-9][0-9]*[* ] //'
-		)
-    this_command_history_id=$(__latest_history_id)
-
+    local this_command_history_id=$(__latest_history_id)
     if [[ "$this_command_history_id" == "$last_history_id" ]]; then
         return
     fi
+
+    local this_command=$(__latest_history_command)
 
     "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
     last_history_id=$this_command_history_id
