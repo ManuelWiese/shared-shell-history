@@ -20,7 +20,6 @@
 #   source /path/to/shared_shell_history.sh
 #
 # Dependencies:
-# - Bash version 5.1 or higher.
 # - PostgreSQL database access and proper configuration set in config.sh.
 # - Required external scripts (config.sh, create_table_if_not_exists.sh, bind_menu_key.sh, submit_to_database.sh).
 
@@ -99,6 +98,30 @@ __trim_whitespace() {
 }
 
 
+# __in_prompt_command
+#
+# Checks if a given command is part of the PROMPT_COMMAND array.
+#
+# This function is designed to determine whether a specified command (argument to this function)
+# is one of the commands executed as part of the Bash PROMPT_COMMAND. PROMPT_COMMAND is a 
+# special Bash variable that holds commands to be executed before each prompt. This is useful 
+# to ensure that certain operations are not redundantly performed if they are already a part of 
+# the prompt's setup.
+#
+# Arguments:
+#   1. The command to check for in the PROMPT_COMMAND array.
+#
+# Returns:
+#   - 0 (success) if the command is found in PROMPT_COMMAND.
+#   - 1 (failure) if the command is not found in PROMPT_COMMAND.
+#
+# Usage:
+#   if __in_prompt_command "some_command"; then
+#       echo "The command is part of PROMPT_COMMAND."
+#   else
+#       echo "The command is not in PROMPT_COMMAND."
+#   fi
+#
 __in_prompt_command() {
 
     local prompt_command_array IFS=$'\n;'
