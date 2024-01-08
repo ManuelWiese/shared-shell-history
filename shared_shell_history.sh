@@ -40,23 +40,23 @@ $INSTALLATION_PATH/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
 source $INSTALLATION_PATH/bind_menu_key.sh
 
 # Helper functions to activate/deactivate interactive mode
-__enable_interactive_mode() {
-    __shared_shell_history_interactive_mode="on"
+__enable_command_capture() {
+    __command_capture_enabled="on"
 }
 
-__disable_interactive_mode() {
-    __shared_shell_history_interactive_mode=""
+__disable_command_capture() {
+    __command_capture_enabled=""
 }
 
 # enable interactive mode by default
-__enable_interactive_mode
+__enable_command_capture
 
 
 if (( BASH_VERSINFO[0] > 5 || (BASH_VERSINFO[0] == 5 && BASH_VERSINFO[1] >= 1) )); then
-    PROMPT_COMMAND+=('__enable_interactive_mode')
+    PROMPT_COMMAND+=('__enable_command_capture')
 else
     # shellcheck disable=SC2179 # PROMPT_COMMAND is not an array in bash <= 5.0
-    PROMPT_COMMAND+=$'\n__enable_interactive_mode'
+    PROMPT_COMMAND+=$'\n__enable_command_capture'
 fi
 
 __trim_whitespace() {
@@ -109,7 +109,7 @@ __shared_shell_history_preexec() {
         # an interactively issued command.
         return
     fi
-    if [[ -z "${__shared_shell_history_interactive_mode:-}" ]]; then
+    if [[ -z "${__command_capture_enabled:-}" ]]; then
         # We're doing something related to displaying the prompt.  Let the
         # prompt set the title instead of me.
         return
@@ -120,14 +120,14 @@ __shared_shell_history_preexec() {
         #   (sleep 1; sleep 2)
         # You want to see the 'sleep 2' as a set_command_title as well.
         if [[ 0 -eq "${BASH_SUBSHELL:-}" ]]; then
-            __disable_interactive_mode
+            __disable_command_capture
         fi
     fi
 
     if  __in_prompt_command "${BASH_COMMAND:-}"; then
         # If we're executing something inside our prompt_command then we don't
         # want to call preexec. Bash prior to 3.1 can't detect this at all :/
-        __disable_interactive_mode
+        __disable_command_capture
         return
     fi
 
