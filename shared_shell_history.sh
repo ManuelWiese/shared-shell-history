@@ -1,3 +1,30 @@
+#!/bin/bash
+# shared_shell_history.sh
+#
+# This script is designed to capture and save Bash command history into a PostgreSQL database. 
+# It is meant to be sourced, not executed directly, allowing it to integrate seamlessly into the 
+# existing shell environment.
+#
+# How it Works:
+# 1. Guard Clause: Prevents re-sourcing the script if it has already been sourced, avoiding duplicate imports.
+# 2. Configuration: Sources external configuration scripts and sets up necessary environment variables.
+# 3. Database Initialization: Checks if the required table exists in the PostgreSQL database, and creates it if not.
+# 4. Command History Capture:
+#    - Utilizes the DEBUG trap to intercept commands before they are executed.
+#    - Filters out commands based on interactive mode and other criteria.
+#    - Extracts the last executed command and saves it to the database.
+# 5. Interactive Mode: Maintains a state to determine when to capture commands, toggled by the prompt command.
+#
+# Usage:
+# Source this script in your Bash profile (e.g., .bashrc or .bash_profile):
+#   source /path/to/shared_shell_history.sh
+#
+# Dependencies:
+# - Bash version 5.1 or higher.
+# - PostgreSQL database access and proper configuration set in config.sh.
+# - Required external scripts (config.sh, create_table_if_not_exists.sh, bind_menu_key.sh, submit_to_database.sh).
+
+
 # Guard clause to prevent duplicate import
 if [[ -n "${__shared_shell_history_imported:-}" ]]; then
     echo "shared_shell_history.sh has already been sourced. Skipping re-import."
