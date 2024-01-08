@@ -24,8 +24,20 @@
 # - PostgreSQL database access and proper configuration set in config.sh.
 # - Required external scripts (config.sh, create_table_if_not_exists.sh, bind_menu_key.sh, submit_to_database.sh).
 
-SHARED_SHELL_HISTORY_BASE_DIR=$(dirname $(realpath $0))
-echo $SHARED_SHELL_HISTORY_BASE_DIR
+SHARED_SHELL_HISTORY_BASE_DIR=$(dirname "$(realpath "$0")")
+
+if [ -f "${SHARED_SHELL_HISTORY_BASE_DIR}/config.sh" ]; then
+    source "${SHARED_SHELL_HISTORY_BASE_DIR}/config.sh"
+else
+    echo "Error: config.sh not found in ${SHARED_SHELL_HISTORY_BASE_DIR}"
+    echo "To set up config.sh:"
+    echo "1. Create a new file named config.sh in the same directory as shared_shell_history.sh."
+    echo "2. Add the following lines to the file, replacing with your own values:"
+    echo '   SHARED_SHELL_HISTORY_DB_URL="postgresql://postgresuser:password@server:port/database"'
+    echo '   SHARED_SHELL_HISTORY_MENU_KEY="\C-b" # Replace with your preferred key combination'
+    echo "3. Save the file and re-source shared_shell_history.sh."
+    exit 1
+fi
 
 # Guard clause to prevent duplicate import
 if [[ -n "${__shared_shell_history_imported:-}" ]]; then
@@ -36,7 +48,6 @@ fi
 __shared_shell_history_imported="defined"
 
 
-source $SHARED_SHELL_HISTORY_BASE_DIR/config.sh
 $SHARED_SHELL_HISTORY_BASE_DIR/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
 source $SHARED_SHELL_HISTORY_BASE_DIR/bind_menu_key.sh
 
