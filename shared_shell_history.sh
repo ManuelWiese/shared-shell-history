@@ -162,7 +162,7 @@ __shared_shell_history_preexec() {
         return
     fi
 
-    $SHARED_SHELL_HISTORY_BASE_DIR/submit_to_database.sh $SHARED_SHELL_HISTORY_DB_URL "$this_command"
+    "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
     last_history_id=$this_command_history_id
 }
 
