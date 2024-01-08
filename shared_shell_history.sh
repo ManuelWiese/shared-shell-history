@@ -49,10 +49,6 @@ __shared_shell_history_imported="defined"
 # Create table if it does not exist already
 "${SHARED_SHELL_HISTORY_BASE_DIR}/create_table_if_not_exists.sh" "${SHARED_SHELL_HISTORY_DB_URL}"
 
-# bind key combination defined in SHARED_SHELL_HISTORY_MENU_KEY to open
-# the history search menu
-source "${SHARED_SHELL_HISTORY_BASE_DIR}/bind_menu_key.sh"
-
 # Helper functions to activate/deactivate command capture
 __enable_command_capture() {
     __command_capture_enabled="on"
