@@ -33,11 +33,11 @@ fi
 
 __shared_shell_history_imported="defined"
 
-INSTALLATION_PATH=$(dirname $(realpath $0))
+BASE_DIR=$(dirname $(realpath $0))
 
-source $INSTALLATION_PATH/config.sh
-$INSTALLATION_PATH/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
-source $INSTALLATION_PATH/bind_menu_key.sh
+source $BASE_DIR/config.sh
+$BASE_DIR/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
+source $BASE_DIR/bind_menu_key.sh
 
 # Helper functions to activate/deactivate interactive mode
 __enable_command_capture() {
@@ -147,7 +147,7 @@ __shared_shell_history_preexec() {
         return
     fi
 
-    $INSTALLATION_PATH/submit_to_database.sh $SHARED_SHELL_HISTORY_DB_URL "$this_command"
+    $BASE_DIR/submit_to_database.sh $SHARED_SHELL_HISTORY_DB_URL "$this_command"
     last_history_id=$this_command_history_id
 }
 
