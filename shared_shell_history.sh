@@ -11,9 +11,9 @@
 # 3. Database Initialization: Checks if the required table exists in the PostgreSQL database, and creates it if not.
 # 4. Command History Capture:
 #    - Utilizes the DEBUG trap to intercept commands before they are executed.
-#    - Filters out commands based on interactive mode and other criteria.
+#    - Filters out commands based on command capture mode and other criteria.
 #    - Extracts the last executed command and saves it to the database.
-# 5. Interactive Mode: Maintains a state to determine when to capture commands, toggled by the prompt command.
+# 5. Command Capture Mode: Maintains a state to determine when to capture commands, toggled by the prompt command.
 #
 # Usage:
 # Source this script in your Bash profile (e.g., .bashrc or .bash_profile):
