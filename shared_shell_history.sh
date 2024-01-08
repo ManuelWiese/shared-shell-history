@@ -24,6 +24,8 @@
 # - PostgreSQL database access and proper configuration set in config.sh.
 # - Required external scripts (config.sh, create_table_if_not_exists.sh, bind_menu_key.sh, submit_to_database.sh).
 
+SHARED_SHELL_HISTORY_BASE_DIR=$(dirname $(realpath $0))
+echo $SHARED_SHELL_HISTORY_BASE_DIR
 
 # Guard clause to prevent duplicate import
 if [[ -n "${__shared_shell_history_imported:-}" ]]; then
@@ -33,11 +35,10 @@ fi
 
 __shared_shell_history_imported="defined"
 
-BASE_DIR=$(dirname $(realpath $0))
 
-source $BASE_DIR/config.sh
-$BASE_DIR/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
-source $BASE_DIR/bind_menu_key.sh
+source $SHARED_SHELL_HISTORY_BASE_DIR/config.sh
+$SHARED_SHELL_HISTORY_BASE_DIR/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
+source $SHARED_SHELL_HISTORY_BASE_DIR/bind_menu_key.sh
 
 # Helper functions to activate/deactivate interactive mode
 __enable_command_capture() {
@@ -147,7 +148,7 @@ __shared_shell_history_preexec() {
         return
     fi
 
-    $BASE_DIR/submit_to_database.sh $SHARED_SHELL_HISTORY_DB_URL "$this_command"
+    $SHARED_SHELL_HISTORY_BASE_DIR/submit_to_database.sh $SHARED_SHELL_HISTORY_DB_URL "$this_command"
     last_history_id=$this_command_history_id
 }
 
