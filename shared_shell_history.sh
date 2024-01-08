@@ -13,23 +13,23 @@ $INSTALLATION_PATH/create_table_if_not_exists.sh $SHARED_SHELL_HISTORY_DB_URL
 source $INSTALLATION_PATH/bind_menu_key.sh
 
 # Helper functions to activate/deactivate interactive mode
-__interactive_mode_on() {
+__enable_interactive_mode() {
     __shared_shell_history_interactive_mode="on"
 }
 
-__interactive_mode_off() {
+__disable_interactive_mode() {
     __shared_shell_history_interactive_mode=""
 }
 
 # enable interactive mode by default
-__interactive_mode_on
+__enable_interactive_mode
 
 
 if (( BASH_VERSINFO[0] > 5 || (BASH_VERSINFO[0] == 5 && BASH_VERSINFO[1] >= 1) )); then
-    PROMPT_COMMAND+=('__interactive_mode_on')
+    PROMPT_COMMAND+=('__enable_interactive_mode')
 else
     # shellcheck disable=SC2179 # PROMPT_COMMAND is not an array in bash <= 5.0
-    PROMPT_COMMAND+=$'\n__interactive_mode_on'
+    PROMPT_COMMAND+=$'\n__enable_interactive_mode'
 fi
 
 __trim_whitespace() {
@@ -93,14 +93,14 @@ __shared_shell_history_preexec() {
         #   (sleep 1; sleep 2)
         # You want to see the 'sleep 2' as a set_command_title as well.
         if [[ 0 -eq "${BASH_SUBSHELL:-}" ]]; then
-            __interactive_mode_off
+            __disable_interactive_mode
         fi
     fi
 
     if  __in_prompt_command "${BASH_COMMAND:-}"; then
         # If we're executing something inside our prompt_command then we don't
         # want to call preexec. Bash prior to 3.1 can't detect this at all :/
-        __interactive_mode_off
+        __disable_interactive_mode
         return
     fi
 
