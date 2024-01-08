@@ -203,9 +203,26 @@ __submit_last_command_to_database() {
     "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
 }
 
-SHARED_SHELL_HISTORY_LAST_ID=$(__latest_history_id)
 
-
+# __shared_shell_history_preexec
+#
+# A pre-execution hook that captures and submits the latest Bash command to the database.
+#
+# This function is designed to be called before each command execution in an interactive Bash session. 
+# It performs several checks to determine whether the latest command should be captured and submitted 
+# to a database. The function:
+#   - Avoids recursion by checking if it's already inside a pre-execution context.
+#   - Skips command capture during command-line completion.
+#   - Checks if command capture is enabled.
+#   - Disables command capture for subsequent commands if inside a subshell.
+#   - Avoids capturing commands that are part of PROMPT_COMMAND.
+#   - Prevents duplicate captures by comparing the latest history ID with the last captured ID.
+#   - Calls __submit_last_command_to_database to submit the command.
+#
+# Usage:
+#   This function is intended to be set as a trap for the DEBUG signal in an interactive shell.
+#   trap '__shared_shell_history_preexec' DEBUG
+#
 __shared_shell_history_preexec() {
     # Don't invoke preexecs if we are inside of another preexec.
     if (( __inside_preexec > 0 )); then
@@ -247,5 +264,8 @@ __shared_shell_history_preexec() {
 
     __submit_last_command_to_database
 }
+
+# init SHARED_SHELL_HISTORY_LAST_ID when sourcing this file the first time
+SHARED_SHELL_HISTORY_LAST_ID=$(__latest_history_id)
 
 trap '__shared_shell_history_preexec' DEBUG
