@@ -1,6 +1,6 @@
 # Guard clause to prevent duplicate import
 if [[ -n "${__shared_shell_history_imported:-}" ]]; then
-    echo "shared_shell_history is already imported"
+    echo "shared_shell_history.sh has already been sourced. Skipping re-import."
     return 0
 fi
 
