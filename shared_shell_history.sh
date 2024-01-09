@@ -46,8 +46,9 @@ fi
 
 __shared_shell_history_imported="defined"
 
+source "${SHARED_SHELL_HISTORY_BASE_DIR}/run_python.sh"
 # Create table if it does not exist already
-"${SHARED_SHELL_HISTORY_BASE_DIR}/create_table_if_not_exists.sh" "${SHARED_SHELL_HISTORY_DB_URL}"
+run_python "${SHARED_SHELL_HISTORY_BASE_DIR}/create_table_if_not_exists.py" --database "${SHARED_SHELL_HISTORY_DB_URL}"
 
 # Helper functions to activate/deactivate command capture
 __enable_command_capture() {
@@ -195,8 +196,22 @@ __latest_history_command() {
 #   __submit_last_command_to_database
 #
 __submit_last_command_to_database() {
-    local this_command=$(__latest_history_command)
-    "${SHARED_SHELL_HISTORY_BASE_DIR}/submit_to_database.sh" "${SHARED_SHELL_HISTORY_DB_URL}" "${this_command}"
+    local user="$USER"
+    local host="$(hostname)"
+    local path="$(realpath ${PWD})"
+    local command=$(__latest_history_command)
+    local venv="$VIRTUAL_ENV"
+
+    local script_path="${SHARED_SHELL_HISTORY_BASE_DIR}/insert_command.py"
+
+    # Call run_python with all necessary arguments
+    run_python "$script_path" \
+               --command "$command" \
+               --database "$SHARED_SHELL_HISTORY_DB_URL" \
+               --host "$host" \
+               --path "$path" \
+               --user "$user" \
+               --venv "$venv"
 }
 
 
