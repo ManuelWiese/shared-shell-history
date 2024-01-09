@@ -1,7 +1,8 @@
 import argparse
 
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, TIMESTAMP
-from sqlalchemy.sql import func
+from sqlalchemy import create_engine, MetaData
+
+from table import define_table
 
 
 def main():
@@ -35,27 +36,6 @@ def main():
         arguments.path,
         arguments.command,
         arguments.venv
-    )
-
-
-def define_table(metadata):
-    """Defines the table structure.
-
-    Args:
-        metadata (MetaData): SQLAlchemy MetaData instance.
-
-    Returns:
-        Table: SQLAlchemy Table object for 'bash_commands'.
-    """
-    return Table(
-        'bash_commands', metadata,
-        Column('id', Integer, primary_key=True),
-        Column('user_name', String),
-        Column('host', String),
-        Column('path', String),
-        Column('venv', String, nullable=True),
-        Column('command', String),
-        Column('time', TIMESTAMP, server_default=func.current_timestamp())
     )
 
 
