@@ -1,8 +1,9 @@
 import argparse
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
-from table import define_table
+from model import ShellCommand
 
 
 def main():
@@ -24,13 +25,9 @@ def main():
         arguments.venv = None
 
     engine = create_engine(arguments.database)
-    metadata = MetaData()
-    bash_commands_table = define_table(metadata)
-    metadata.create_all(engine)
 
     insert_command(
         engine,
-        bash_commands_table,
         arguments.user,
         arguments.host,
         arguments.path,
@@ -39,28 +36,27 @@ def main():
     )
 
 
-def insert_command(engine, table, user, host, path, command, venv):
+def insert_command(engine, user, host, path, command, venv):
     """Inserts a command into the database.
 
     Args:
         engine (Engine): SQLAlchemy engine object.
-        table (Table): SQLAlchemy table object.
         user (str): User name.
         host (str): Host name.
         path (str): Path.
         command (str): Command.
         venv (str): Virtual environment.
     """
-    with engine.connect() as conn:
-        insert_stmt = table.insert().values(
+    with Session(engine) as session:
+        new_command = ShellCommand(
             user_name=user,
             host=host,
             path=path,
             command=command,
             venv=venv
         )
-        conn.execute(insert_stmt)
-        conn.commit()
+        session.add(new_command)
+        session.commit()
 
 
 if __name__ == "__main__":

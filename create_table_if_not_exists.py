@@ -1,8 +1,8 @@
 import argparse
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 
-from table import define_table
+from model import Base
 
 
 def main():
@@ -18,10 +18,7 @@ def main():
     database_url = args.database
 
     engine = create_engine(database_url)
-    metadata = MetaData()
-
-    bash_commands_table = define_table(metadata)
-    bash_commands_table.create(engine, checkfirst=True)
+    Base.metadata.create_all(engine, checkfirst=True)
 
 
 if __name__ == "__main__":
