@@ -301,7 +301,7 @@ __shared_shell_history_preexec() {
 #
 search_and_insert_from_history() {
     tempfile=$(mktemp /tmp/command_XXXX)
-    python3 search_command.py --tmp_file $tempfile --db_url $SHARED_SHELL_HISTORY_DB_URL --user $USER
+    run_python search_command.py --tmp_file $tempfile --db_url $SHARED_SHELL_HISTORY_DB_URL --user $USER
 
     command=$(cat $tempfile)
     rm $tempfile

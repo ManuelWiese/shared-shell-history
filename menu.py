@@ -1,10 +1,12 @@
-from abc import ABC, abstractmethod
 import curses
-import json
 import subprocess
 from typing import Optional, List
 
+from sqlalchemy import create_engine, select, desc
+from sqlalchemy.orm import Session
+
 from menu_entry import Any, Command, Host, User, MenuEntry
+from model import ShellCommand
 
 
 KEY_ESCAPE = 27
@@ -12,7 +14,7 @@ KEY_NEWLINE = 10
 KEY_CARRIAGE_RETURN = 13
 
 
-class Menu(ABC):
+class Menu:
     def __init__(self, stdscr, menu_entries, title=None) -> None:
         self.stdscr = stdscr
         self.menu_entries = menu_entries
@@ -126,34 +128,31 @@ class CommandMenu(Menu):
 
         self.spare_top_lines = 1
 
-    def get_command_menu_entries(self): #None means any
-        if self.username is None and self.host is None:
-            where_clause = ""
-        else:
-            conditions = []
-            if self.username is not None:
-                conditions.append(f"user_name='{self.username}'")
-            if self.host is not None:
-                conditions.append(f"host='{self.host}'")
-            where_clause = f" WHERE {' AND '.join(conditions)}"
+    def get_command_menu_entries(self):
+        engine = create_engine(self.db_url)
+        with Session(engine) as session:
+            query = select(
+                ShellCommand.user_name,
+                ShellCommand.host,
+                ShellCommand.time,
+                ShellCommand.command
+            ).order_by(
+                desc(ShellCommand.id)
+            )
 
-        psql_command = (
-            f"psql {self.db_url} -t -c"
-            f"\"SELECT to_json(t) FROM"
-            f"(SELECT user_name, host, time, command FROM bash_commands{where_clause}) AS t\""
-        )
+            if self.username is not None or self.host is not None:
+                conditions = []
+                if self.username is not None:
+                    conditions.append(ShellCommand.user_name == self.username)
+                if self.host is not None:
+                    conditions.append(ShellCommand.host == self.host)
+                query = query.where(*conditions)
 
-        process = subprocess.run(
-            psql_command,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
+            result = session.execute(query)
+            commands = result.fetchall()
 
-        commands = reversed(process.stdout.splitlines())
-        commands = [command for command in commands if command]
-        commands = [json.loads(command) for command in commands]
+        # Process and return the command entries
+        commands = [dict(zip(result.keys(), command)) for command in commands]
         for command in commands:
             command["command"] = command["command"].strip()
 
