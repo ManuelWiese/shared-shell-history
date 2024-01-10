@@ -1,0 +1,26 @@
+InfoScreen {
+    align: center middle;
+}
+
+InfoScreen > Container {
+    width: auto;
+    height: auto;
+    align: center middle;
+    padding: 1 2;
+    background: $panel;
+}
+
+InfoScreen > Container > Label {
+    width: 100%;
+    content-align-horizontal: left;
+}
+
+InfoScreen > Container > Horizontal {
+    height: auto;
+    width: auto;
+    content-align-horizontal: center
+}
+
+InfoScreen > Container > Horizontal > Button {
+    margin: 1 2;
+}

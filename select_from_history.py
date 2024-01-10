@@ -1,6 +1,8 @@
+from textual import on
 from textual.app import App, ComposeResult, Binding
-from textual.containers import Horizontal
-from textual.widgets import Footer, Label, ListItem, ListView
+from textual.containers import Container, Horizontal
+from textual.widgets import Button, Footer, Label, ListItem, ListView
+from textual.screen import ModalScreen
 
 from sqlalchemy import create_engine, select, desc
 from sqlalchemy.orm import Session
@@ -9,25 +11,48 @@ from model import ShellCommand
 
 
 class CommandListItem(ListItem):
-    def __init__(self, user, host, command):
+    def __init__(self, command):
         super().__init__()
-        self.user = user
-        self.host = host
         self.command = command
 
     def compose(self):
         text_width = 10
         with Horizontal():
-            yield Label(f"{self.user[:text_width]:<{text_width}} ")
-            yield Label(f"{self.host[:text_width]:<{text_width}} ")
-            yield Label(self.command)
+            yield Label(f"{self.command.user_name[:text_width]:<{text_width}} ")
+            yield Label(f"{self.command.host[:text_width]:<{text_width}} ")
+            yield Label(self.command.command)
+
+
+class InfoScreen(ModalScreen):
+    def __init__(self, command):
+        super().__init__()
+        self.command = command
+
+    def compose(self):
+        with Container():
+            yield Label(f"Id: {self.command.id}")
+            yield Label(f"User: {self.command.user_name}")
+            yield Label(f"Host: {self.command.host}")
+            yield Label(f"Path: {self.command.path}")
+            yield Label(f"Venv: {self.command.venv}")
+            yield Label(f"Time: {self.command.time}")
+            yield Label(f"Command: {self.command.command}")
+            with Horizontal():
+                yield Button("Close", id="close")
+                yield Button.error("Delete", id="delete")
+
+    @on(Button.Pressed)
+    def leave_modal_screen(self, event):
+        self.dismiss()
 
 
 class CommandHistory(App):
-    # CSS_PATH = "list_view.tcss"
+    CSS_PATH = "select_from_history.tcss"
     BINDINGS = [
         Binding("q", "quit()", "Quit", priority=True, show=True),
         Binding("u", "select_user()", "Select User", show=True),
+        Binding("h", "select_host()", "Select Host", show=True),
+        Binding("i", "show_info()", "Show Info", show=True),
         Binding("d", "delete_entry()", "Delete Entry", show=True),
     ]
 
@@ -45,10 +70,7 @@ class CommandHistory(App):
         engine = create_engine(self.database)
         with Session(engine) as session:
             query = select(
-                ShellCommand.user_name,
-                ShellCommand.host,
-                ShellCommand.time,
-                ShellCommand.command
+                ShellCommand
             ).order_by(
                 desc(ShellCommand.id)
             )
@@ -61,27 +83,21 @@ class CommandHistory(App):
                     conditions.append(ShellCommand.host == self.host)
                 query = query.where(*conditions)
 
-            commands = session.execute(query).mappings().all()
+            commands = session.execute(query).all()
 
-        return commands
+        return [command for (command, ) in commands]
 
     def compose(self) -> ComposeResult:
         list_items = (
-            CommandListItem(
-                command["user_name"],
-                command["host"],
-                command["command"]
-            )
+            CommandListItem(command)
             for command in self.commands
         )
 
-        yield ListView(
-            *list_items
-        )
+        yield ListView(*list_items, id="command_list_view")
         yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected):
-        command = event.item.command
+        command = event.item.command.command
         with open(self.tmp_file, "w") as f:
             f.write(command)
         exit()
@@ -91,6 +107,11 @@ class CommandHistory(App):
 
     def action_select_user(self):
         self.mount(Label("HALLO"))
+
+    def action_show_info(self):
+        command_list_view = self.get_child_by_id(id="command_list_view")
+        command = self.commands[command_list_view.index]
+        self.push_screen(InfoScreen(command))
 
     def action_delete_entry(self):
         self.mount(Label("Delete"))
