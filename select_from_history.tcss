@@ -1,3 +1,15 @@
+CommandListItem > Horizontal > #user_name {
+    width: 10%;
+}
+
+CommandListItem > Horizontal > #host {
+    width: 10%;
+}
+
+CommandListItem > Horizontal > #command {
+    width: 80%;
+}
+
 InfoScreen {
     align: center middle;
 }

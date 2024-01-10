@@ -22,11 +22,10 @@ class CommandListItem(ListItem):
         self.command = command
 
     def compose(self):
-        text_width = 10
         with Horizontal():
-            yield Label(f"{self.command.user_name[:text_width]:<{text_width}} ")
-            yield Label(f"{self.command.host[:text_width]:<{text_width}} ")
-            yield Label(self.command.command)
+            yield Label(self.command.user_name, id="user_name")
+            yield Label(self.command.host, id="host")
+            yield Label(self.command.command, id="command")
 
 
 class InfoScreen(ModalScreen):
