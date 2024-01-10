@@ -18,9 +18,32 @@ InfoScreen > Container > Label {
 InfoScreen > Container > Horizontal {
     height: auto;
     width: auto;
-    content-align-horizontal: center
+    content-align-horizontal: center;
 }
 
 InfoScreen > Container > Horizontal > Button {
+    margin: 1 2;
+}
+
+
+SelectionScreen {
+    align: center middle;
+}
+
+SelectionScreen > SelectionList {
+    padding: 1;
+    border: solid $accent;
+    width: 80%;
+    height: 80%;
+    align: center middle;
+}
+
+SelectionScreen > Horizontal {
+    height: auto;
+    width: auto;
+    content-align-horizontal: center;
+}
+
+SelectionScreen > Horizontal > Button {
     margin: 1 2;
 }
