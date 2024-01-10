@@ -215,6 +215,25 @@ class CommandHistory(App):
         command_list_view.extend(self.get_list_items())
         command_list_view.index = 0
 
+    def action_select_host(self):
+        self.push_screen(
+            SelectionScreen(
+                "Select host(s)",
+                self.hosts,
+                self.selected_hosts
+            ),
+            self.set_selected_hosts
+        )
+
+    def set_selected_hosts(self, selected_hosts):
+        self.selected_hosts = selected_hosts
+        self.filtered_commands = self.get_filtered_commands()
+
+        command_list_view = self.get_child_by_id(id="command_list_view")
+        command_list_view.clear()
+        command_list_view.extend(self.get_list_items())
+        command_list_view.index = 0
+
     def action_show_info(self):
         command_list_view = self.get_child_by_id(id="command_list_view")
         command = self.commands[command_list_view.index]
