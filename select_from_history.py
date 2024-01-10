@@ -88,13 +88,16 @@ class CommandHistory(App):
         return [command for (command, ) in commands]
 
     def compose(self) -> ComposeResult:
-        list_items = (
-            CommandListItem(command)
-            for command in self.commands
-        )
+        list_items = self.get_list_items()
 
         yield ListView(*list_items, id="command_list_view")
         yield Footer()
+
+    def get_list_items(self):
+        return (
+            CommandListItem(command)
+            for command in self.commands
+        )
 
     def on_list_view_selected(self, event: ListView.Selected):
         command = event.item.command.command
@@ -114,7 +117,20 @@ class CommandHistory(App):
         self.push_screen(InfoScreen(command))
 
     def action_delete_entry(self):
-        self.mount(Label("Delete"))
+        self.delete_entry()
+
+    def delete_entry(self):
+        command_list_view = self.get_child_by_id(id="command_list_view")
+        index = command_list_view.index
+        command = self.commands[index]
+
+        # TODO: delete from database
+
+        del self.commands[index]
+        command_list_view.clear()
+        command_list_view.extend(self.get_list_items())
+        # select the item above the deleted item
+        command_list_view.index = max(index - 1, 0)
 
 
 if __name__ == "__main__":
