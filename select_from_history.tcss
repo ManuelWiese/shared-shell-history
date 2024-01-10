@@ -15,7 +15,7 @@ InfoScreen {
 }
 
 InfoScreen > Container {
-    width: auto;
+    width: 80%;
     height: auto;
     align: center middle;
     padding: 1 2;
@@ -27,14 +27,28 @@ InfoScreen > Container > Label {
     content-align-horizontal: left;
 }
 
-InfoScreen > Container > Horizontal {
+InfoScreen > Container > Container {
+    layout: horizontal;
     height: auto;
-    width: auto;
-    content-align-horizontal: center;
+    width: 100%;
 }
 
-InfoScreen > Container > Horizontal > Button {
-    margin: 1 2;
+InfoScreen > Container > Container > #close {
+    margin: 1 1;
+    # align-horizontal: right;
+    width: 1fr;
+}
+
+InfoScreen > Container > Container > #spacer {
+    margin: 0 0;
+    # align-horizontal: right;
+    width: 1fr;
+}
+
+InfoScreen > Container > Container > #delete {
+    margin: 1 1;
+    # align-horizontal: right;
+    width: 1fr;
 }
 
 

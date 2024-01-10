@@ -3,7 +3,7 @@ import re
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Center, Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button, Footer, Input,
@@ -48,8 +48,9 @@ class InfoScreen(ModalScreen):
             yield Label(f"Venv: {self.command.venv}")
             yield Label(f"Time: {self.command.time}")
             yield Label(f"Command: {self.command.command}")
-            with Horizontal():
-                yield Button("Close", id="close")
+            with Container():
+                yield Button.success("Close", id="close")
+                yield Label("", id="spacer")
                 yield Button.error("Delete", id="delete")
 
     @on(Button.Pressed)
