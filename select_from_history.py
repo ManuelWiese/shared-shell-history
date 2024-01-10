@@ -17,6 +17,12 @@ from model import ShellCommand
 
 
 class CommandListItem(ListItem):
+    """
+    Custom list item widget for displaying a command.
+
+    Displays command information in a horizontal layout, with each part of the
+    command (user name, host, command text) styled separately via CSS.
+    """
     def __init__(self, command):
         super().__init__()
         self.command = command
