@@ -108,10 +108,6 @@ class CommandHistory(App):
         self.database = database
         self.tmp_file = tmp_file
 
-        # TODO: remove this members
-        self.username = user
-        self.host = host
-
         self.commands = self.fetch_commands()
         self.usernames = self.fetch_users()
         self.hosts = self.fetch_hosts()
@@ -125,6 +121,8 @@ class CommandHistory(App):
             self.selected_hosts = self.hosts
         else:
             self.selected_hosts = [host]
+
+        self.filtered_commands = self.get_filtered_commands()
 
     def fetch_users(self):
         engine = create_engine(self.database)
@@ -161,17 +159,21 @@ class CommandHistory(App):
                 desc(ShellCommand.id)
             )
 
-            if self.username is not None or self.host is not None:
-                conditions = []
-                if self.username is not None:
-                    conditions.append(ShellCommand.user_name == self.username)
-                if self.host is not None:
-                    conditions.append(ShellCommand.host == self.host)
-                query = query.where(*conditions)
-
             commands = session.execute(query).all()
 
         return [command for (command, ) in commands]
+
+    def get_filtered_commands(self):
+        filtered_commands = self.commands.copy()
+        filtered_commands = [
+            command for command in filtered_commands
+            if command.user_name in self.selected_usernames]
+
+        filtered_commands = [
+            command for command in filtered_commands
+            if command.host in self.selected_hosts]
+
+        return filtered_commands
 
     def compose(self) -> ComposeResult:
         list_items = self.get_list_items()
@@ -182,7 +184,7 @@ class CommandHistory(App):
     def get_list_items(self):
         return (
             CommandListItem(command)
-            for command in self.commands
+            for command in self.filtered_commands
         )
 
     def on_list_view_selected(self, event: ListView.Selected):
@@ -206,6 +208,12 @@ class CommandHistory(App):
 
     def set_selected_users(self, selected_usernames):
         self.selected_usernames = selected_usernames
+        self.filtered_commands = self.get_filtered_commands()
+
+        command_list_view = self.get_child_by_id(id="command_list_view")
+        command_list_view.clear()
+        command_list_view.extend(self.get_list_items())
+        command_list_view.index = 0
 
     def action_show_info(self):
         command_list_view = self.get_child_by_id(id="command_list_view")
@@ -222,20 +230,27 @@ class CommandHistory(App):
     def delete_entry(self):
         command_list_view = self.get_child_by_id(id="command_list_view")
         index = command_list_view.index
-        command = self.commands[index]
+        command = self.filtered_commands[index]
 
-        # Delete from database
-        engine = create_engine(self.database)
-        with Session(engine) as session:
-            delete_query = delete(ShellCommand).where(ShellCommand.id == command.id)
-            session.execute(delete_query)
-            session.commit()
+        self.delete_command_from_database(command)
+        self.delete_command_from_lists(command)
 
-        del self.commands[index]
         command_list_view.clear()
         command_list_view.extend(self.get_list_items())
         # select the item above the deleted item
         command_list_view.index = max(index - 1, 0)
+
+    def delete_command_from_database(self, command):
+        engine = create_engine(self.database)
+        with Session(engine) as session:
+            delete_query = delete(ShellCommand).where(
+                ShellCommand.id == command.id)
+            session.execute(delete_query)
+            session.commit()
+
+    def delete_command_from_lists(self, command):
+        self.filtered_commands.remove(command)
+        self.commands.remove(command)
 
 
 if __name__ == "__main__":
