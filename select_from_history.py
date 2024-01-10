@@ -1,7 +1,9 @@
+import re
+
 from textual import on
 from textual.app import App, ComposeResult, Binding
 from textual.containers import Container, Horizontal
-from textual.widgets import Button, Footer, Label, ListItem, ListView, SelectionList
+from textual.widgets import Button, Footer, Label, ListItem, ListView, SelectionList, Input
 from textual.screen import ModalScreen
 
 from sqlalchemy import create_engine, select, desc, delete, distinct
@@ -93,14 +95,33 @@ class SelectionScreen(ModalScreen):
         self.query_one(SelectionList)._toggle_highlighted_selection()
 
 
+class SearchScreen(ModalScreen):
+    def __init__(self, current_regex):
+        super().__init__()
+        self.current_regex = current_regex
+
+    def compose(self):
+        yield Input(placeholder="Search command...")
+
+    def on_mount(self):
+        self.query_one(Input).value = self.current_regex
+
+    @on(Input.Submitted)
+    def close(self, event):
+        self.dismiss(
+            self.query_one(Input).value
+        )
+
+
 class CommandHistory(App):
     CSS_PATH = "select_from_history.tcss"
     BINDINGS = [
-        Binding("q", "quit()", "Quit", priority=True, show=True),
+        Binding("q", "quit()", "Quit", show=True),
         Binding("u", "select_user()", "Select User", show=True),
         Binding("h", "select_host()", "Select Host", show=True),
         Binding("i", "show_info()", "Show Info", show=True),
         Binding("d", "delete_entry()", "Delete Entry", show=True),
+        Binding("s", "search", "Search", show=True),
     ]
 
     def __init__(self, database, tmp_file, user=None, host=None):
@@ -122,6 +143,7 @@ class CommandHistory(App):
         else:
             self.selected_hosts = [host]
 
+        self.search_string = ""
         self.filtered_commands = self.get_filtered_commands()
 
     def fetch_users(self):
@@ -173,7 +195,16 @@ class CommandHistory(App):
             command for command in filtered_commands
             if command.host in self.selected_hosts]
 
+        if self.search_string:
+            filtered_commands = [
+                command for command in filtered_commands
+                if self.command_does_match(command.command)]
+
         return filtered_commands
+
+    def command_does_match(self, command):
+        match = re.search(self.search_string, command)
+        return match is not None
 
     def compose(self) -> ComposeResult:
         list_items = self.get_list_items()
@@ -270,6 +301,25 @@ class CommandHistory(App):
     def delete_command_from_lists(self, command):
         self.filtered_commands.remove(command)
         self.commands.remove(command)
+
+    def action_search(self):
+        self.push_screen(
+            SearchScreen(self.search_string),
+            self.change_search_string
+        )
+
+    def change_search_string(self, new_search_string):
+        if new_search_string == self.search_string:
+            return
+
+        self.search_string = new_search_string
+
+        self.filtered_commands = self.get_filtered_commands()
+
+        command_list_view = self.get_child_by_id(id="command_list_view")
+        command_list_view.clear()
+        command_list_view.extend(self.get_list_items())
+        command_list_view.index = 0
 
 
 if __name__ == "__main__":
