@@ -1,12 +1,16 @@
 import re
 
 from textual import on
-from textual.app import App, ComposeResult, Binding
+from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Container, Horizontal
-from textual.widgets import Button, Footer, Label, ListItem, ListView, SelectionList, Input
 from textual.screen import ModalScreen
+from textual.widgets import (
+    Button, Footer, Input,
+    Label, ListItem, ListView, SelectionList
+)
 
-from sqlalchemy import create_engine, select, desc, delete, distinct
+from sqlalchemy import create_engine, delete, desc, distinct, select
 from sqlalchemy.orm import Session
 
 from model import ShellCommand
