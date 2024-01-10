@@ -4,7 +4,7 @@ from textual.containers import Container, Horizontal
 from textual.widgets import Button, Footer, Label, ListItem, ListView
 from textual.screen import ModalScreen
 
-from sqlalchemy import create_engine, select, desc
+from sqlalchemy import create_engine, select, desc, delete
 from sqlalchemy.orm import Session
 
 from model import ShellCommand
@@ -43,7 +43,7 @@ class InfoScreen(ModalScreen):
 
     @on(Button.Pressed)
     def leave_modal_screen(self, event):
-        self.dismiss()
+        self.dismiss(event.button.id == "delete")
 
 
 class CommandHistory(App):
@@ -114,7 +114,11 @@ class CommandHistory(App):
     def action_show_info(self):
         command_list_view = self.get_child_by_id(id="command_list_view")
         command = self.commands[command_list_view.index]
-        self.push_screen(InfoScreen(command))
+        self.push_screen(InfoScreen(command), self.maybe_delete_entry)
+
+    def maybe_delete_entry(self, delete_entry):
+        if delete_entry:
+            self.delete_entry()
 
     def action_delete_entry(self):
         self.delete_entry()
@@ -124,7 +128,12 @@ class CommandHistory(App):
         index = command_list_view.index
         command = self.commands[index]
 
-        # TODO: delete from database
+        # Delete from database
+        engine = create_engine(self.database)
+        with Session(engine) as session:
+            delete_query = delete(ShellCommand).where(ShellCommand.id == command.id)
+            session.execute(delete_query)
+            session.commit()
 
         del self.commands[index]
         command_list_view.clear()
