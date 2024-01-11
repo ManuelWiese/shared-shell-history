@@ -73,3 +73,9 @@ SelectionScreen > Horizontal {
 SelectionScreen > Horizontal > Button {
     margin: 1 2;
 }
+
+#status_bar {
+    background: $accent-darken-3;
+    text-style: bold;
+    width: 100%;
+}

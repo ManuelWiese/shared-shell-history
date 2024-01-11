@@ -258,13 +258,17 @@ class CommandHistory(App):
         Compose the widgets to be displayed in the Textual app.
 
         This method sets up the main layout of the app, including a ListView for
-        displaying command items and a Footer.
+        displaying command items, a StatusBar and a Footer.
 
         Yields:
             ComposeResult: The widgets to be displayed in the app layout.
         """
         list_items = self.get_list_items()
         yield ListView(*list_items, id="command_list_view")
+        yield Label(
+            self.get_status_string(),
+            id="status_bar"
+        )
         yield Footer()
 
     def get_list_items(self):
@@ -280,6 +284,37 @@ class CommandHistory(App):
             CommandListItem(command)
             for command in self.filtered_commands
         )
+
+    def get_status_string(self):
+        """
+        Generate a status string that summarizes the current selections of users,
+        hosts, and the search string.
+
+        Returns:
+            str: A string representing the current selections and search state.
+        """
+        strings = []
+
+        if set(self.usernames) != set(self.selected_usernames):
+            strings.append(
+                f"Selected Users: [{', '.join(self.selected_usernames)}]"
+            )
+        else:
+            strings.append("Selected Users: [*]")
+
+        if set(self.hosts) != set(self.selected_hosts):
+            strings.append(
+                f"Selected Hosts: [{', '.join(self.selected_hosts)}]"
+            )
+        else:
+            strings.append("Selected Hosts: [*]")
+
+        if self.search_string:
+            strings.append(
+                f"Search String: {self.search_string}"
+            )
+
+        return ", ".join(strings)
 
     def on_list_view_selected(self, event: ListView.Selected):
         command = event.item.command.command
@@ -309,6 +344,10 @@ class CommandHistory(App):
         command_list_view.extend(self.get_list_items())
         command_list_view.index = 0
 
+        status_bar = self.get_child_by_id(id="status_bar")
+        status_bar.update(self.get_status_string())
+
+
     def action_select_host(self):
         self.push_screen(
             SelectionScreen(
@@ -327,6 +366,9 @@ class CommandHistory(App):
         command_list_view.clear()
         command_list_view.extend(self.get_list_items())
         command_list_view.index = 0
+
+        status_bar = self.get_child_by_id(id="status_bar")
+        status_bar.update(self.get_status_string())
 
     def action_show_info(self):
         command_list_view = self.get_child_by_id(id="command_list_view")
@@ -383,6 +425,9 @@ class CommandHistory(App):
         command_list_view.clear()
         command_list_view.extend(self.get_list_items())
         command_list_view.index = 0
+
+        status_bar = self.get_child_by_id(id="status_bar")
+        status_bar.update(self.get_status_string())
 
 
 if __name__ == "__main__":
