@@ -23,7 +23,13 @@
 # - PostgreSQL database access and proper configuration set in config.sh.
 # - Required external scripts (config.sh, create_table_if_not_exists.sh, bind_menu_key.sh, submit_to_database.sh).
 
-SHARED_SHELL_HISTORY_BASE_DIR=$(dirname "$(realpath "$0")")
+SHARED_SHELL_HISTORY_BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+# Check if the base directory exists
+if [ ! -d "$SHARED_SHELL_HISTORY_BASE_DIR" ]; then
+    echo "Error: Unable to locate the base directory of the script."
+    return 1  # Use 'return' since this script is sourced
+fi
 
 if [ -f "${SHARED_SHELL_HISTORY_BASE_DIR}/config.sh" ]; then
     source "${SHARED_SHELL_HISTORY_BASE_DIR}/config.sh"
