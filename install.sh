@@ -9,7 +9,7 @@ mkdir -p "$TARGET_DIR"
 BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # Copy relevant files to the target directory
-cp -r "$BASE_DIR/shared_shell_history/*" "$TARGET_DIR/"
+cp -r "$BASE_DIR"/shared_shell_history/* "$TARGET_DIR/"
 
 # Function to ask for a configuration value
 ask_for_value() {
