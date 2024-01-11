@@ -193,17 +193,19 @@ class CommandHistory(App):
         return [result[0] for result in results]
 
     def fetch_commands(self):
+        """
+        Fetch and return all command entries from the database,
+        ordered by their IDs in descending order.
+
+        Returns:
+            list: A list of ShellCommand objects representing the command entries.
+        """
         engine = create_engine(self.database)
         with Session(engine) as session:
-            query = select(
-                ShellCommand
-            ).order_by(
-                desc(ShellCommand.id)
-            )
+            query = select(ShellCommand).order_by(desc(ShellCommand.id))
+            results = session.execute(query).all()
 
-            commands = session.execute(query).all()
-
-        return [command for (command, ) in commands]
+        return [result[0] for result in results]
 
     def get_filtered_commands(self):
         filtered_commands = self.commands.copy()
