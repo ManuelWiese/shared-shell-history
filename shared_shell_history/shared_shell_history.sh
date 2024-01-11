@@ -82,6 +82,36 @@ else
     PROMPT_COMMAND+=$'\n__enable_command_capture'
 fi
 
+# shared_shell_history_enable_capture
+#
+# Function to manually enable the capture feature of shared_shell_history
+#
+# The __SHARED_SHELL_HISTORY_ENABLED is set to 1, 
+# which is semanticly equivalent to enabled.
+# To disable the capture feature see shared_shell_history_disable_capture
+#
+# Usage:
+#   shared_shell_history_enable_capture
+#   #The following commands are captured by the shared shell history
+shared_shell_history_enable_capture() {
+    __SHARED_SHELL_HISTORY_ENABLED=1
+}
+
+# shared_shell_history_disable_capture
+#
+# Function to manually disable the capture feature of shared_shell_history
+#
+# The __SHARED_SHELL_HISTORY_ENABLED is set to 0, 
+# which is semanticly equivalent to disabled.
+# To reenable the feature see shared_shell_history_enable_capture
+#
+# Usage:
+#   shared_shell_history_disable_capture
+#   #The following commands are NOT captured by the shared shell history
+shared_shell_history_disable_capture() {
+    __SHARED_SHELL_HISTORY_ENABLED=0
+}
+
 # __trim_whitespace
 #
 # Trims leading and trailing whitespace from a given string.
@@ -234,6 +264,7 @@ __submit_last_command_to_database() {
 # This function is designed to be called before each command execution in an interactive Bash session. 
 # It performs several checks to determine whether the latest command should be captured and submitted 
 # to a database. The function:
+#   - Checks whether the capture feature has been manually disabled.
 #   - Avoids recursion by checking if it's already inside a pre-execution context.
 #   - Skips command capture during command-line completion.
 #   - Checks if command capture is enabled.
@@ -247,6 +278,12 @@ __submit_last_command_to_database() {
 #   trap '__shared_shell_history_preexec' DEBUG
 #
 __shared_shell_history_preexec() {
+
+    #Don't invoke preexecs if capture feature has been manually deactivated
+    if [[ 0 -eq "${__SHARED_SHELL_HISTORY_ENABLED:-}" ]]; then
+        return
+    fi
+
     # Don't invoke preexecs if we are inside of another preexec.
     if (( __inside_preexec > 0 )); then
       return
@@ -334,3 +371,6 @@ SHARED_SHELL_HISTORY_LAST_ID=$(__latest_history_id)
 trap '__shared_shell_history_preexec' DEBUG
 
 bind -x '"'$SHARED_SHELL_HISTORY_MENU_KEY'":search_and_insert_from_history'
+
+#enable history capture by default
+shared_shell_history_enable_capture
