@@ -254,12 +254,28 @@ class CommandHistory(App):
         return match is not None
 
     def compose(self) -> ComposeResult:
-        list_items = self.get_list_items()
+        """
+        Compose the widgets to be displayed in the Textual app.
 
+        This method sets up the main layout of the app, including a ListView for
+        displaying command items and a Footer.
+
+        Yields:
+            ComposeResult: The widgets to be displayed in the app layout.
+        """
+        list_items = self.get_list_items()
         yield ListView(*list_items, id="command_list_view")
         yield Footer()
 
     def get_list_items(self):
+        """
+        Generate a sequence of CommandListItem objects based on filtered commands.
+
+        This method creates a CommandListItem for each command in `self.filtered_commands`.
+
+        Returns:
+            Generator[CommandListItem]: A generator yielding CommandListItem objects.
+        """
         return (
             CommandListItem(command)
             for command in self.filtered_commands
