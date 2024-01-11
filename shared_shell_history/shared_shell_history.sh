@@ -306,10 +306,15 @@ __shared_shell_history_preexec() {
 #   When the key combination is pressed, the function will be triggered.
 #
 search_and_insert_from_history() {
-    tempfile=$(mktemp /tmp/command_XXXX)
-    run_python select_from_history.py --tmp_file $tempfile --database $SHARED_SHELL_HISTORY_DB_URL --user $USER
+    local script_path="${SHARED_SHELL_HISTORY_BASE_DIR}/select_from_history.py"
+    local tempfile=$(mktemp /tmp/command_XXXX)
 
-    command=$(cat $tempfile)
+    run_python "$script_path" \
+	       --tmp_file "$tempfile" \
+	       --database "$SHARED_SHELL_HISTORY_DB_URL"\
+	       --user "$USER"
+
+    local command=$(cat $tempfile)
     rm $tempfile
 
     READLINE_LINE=$command
