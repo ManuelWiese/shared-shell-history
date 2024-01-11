@@ -238,6 +238,18 @@ class CommandHistory(App):
         return True
 
     def command_does_match(self, command):
+        """
+        Check if the given command contains a match for the search string.
+
+        This method uses regular expressions to search for the search string within 
+        the command. The search is case-sensitive.
+
+        Args:
+            command (str): The command string to be searched.
+
+        Returns:
+            bool: True if the search string is found within the command, False otherwise.
+        """
         match = re.search(self.search_string, command)
         return match is not None
 
