@@ -208,21 +208,34 @@ class CommandHistory(App):
         return [result[0] for result in results]
 
     def get_filtered_commands(self):
-        filtered_commands = self.commands.copy()
-        filtered_commands = [
-            command for command in filtered_commands
-            if command.user_name in self.selected_usernames]
+        """
+        Filter the command list based on selected usernames, hosts, and a search string.
 
-        filtered_commands = [
-            command for command in filtered_commands
-            if command.host in self.selected_hosts]
+        Returns:
+            list: A list of filtered ShellCommand objects.
+        """
+        return [command for command in self.commands if self.command_matches_filters(command)]
 
-        if self.search_string:
-            filtered_commands = [
-                command for command in filtered_commands
-                if self.command_does_match(command.command)]
+    def command_matches_filters(self, command):
+        """
+        Check if a given command matches the selected filters.
 
-        return filtered_commands
+        Args:
+            command (ShellCommand): The command object to be checked.
+
+        Returns:
+            bool: True if the command matches the filters, False otherwise.
+        """
+        if not command.user_name in self.selected_usernames:
+            return False
+
+        if not command.host in self.selected_hosts:
+            return False
+
+        if self.search_string and not self.command_does_match(command.command):
+            return False
+
+        return True
 
     def command_does_match(self, command):
         match = re.search(self.search_string, command)
