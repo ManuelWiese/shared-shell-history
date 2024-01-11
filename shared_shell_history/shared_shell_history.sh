@@ -112,6 +112,9 @@ shared_shell_history_disable_capture() {
     __SHARED_SHELL_HISTORY_ENABLED=0
 }
 
+#enable history capture by default
+shared_shell_history_enable_capture
+
 # __trim_whitespace
 #
 # Trims leading and trailing whitespace from a given string.
@@ -371,6 +374,3 @@ SHARED_SHELL_HISTORY_LAST_ID=$(__latest_history_id)
 trap '__shared_shell_history_preexec' DEBUG
 
 bind -x '"'$SHARED_SHELL_HISTORY_MENU_KEY'":search_and_insert_from_history'
-
-#enable history capture by default
-shared_shell_history_enable_capture
