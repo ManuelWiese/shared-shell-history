@@ -35,7 +35,7 @@ else
     echo '   SHARED_SHELL_HISTORY_DB_URL="postgresql://postgresuser:password@server:port/database"'
     echo '   SHARED_SHELL_HISTORY_MENU_KEY="\C-b" # Replace with your preferred key combination'
     echo "3. Save the file and re-source shared_shell_history.sh."
-    exit 1
+    return 1
 fi
 
 # Guard clause to prevent duplicate import
