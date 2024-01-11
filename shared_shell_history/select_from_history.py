@@ -159,29 +159,16 @@ class CommandHistory(App):
         self.filtered_commands = self.get_filtered_commands()
 
     def fetch_users(self):
-        engine = create_engine(self.database)
-        with Session(engine) as session:
-            query = select(
-                distinct(
-                    ShellCommand.user_name
-                )
-            )
-
-            results = session.execute(query).all()
-
-        return [result[0] for result in results]
+        return self.fetch_distinct_column_values(ShellCommand.user_name)
 
     def fetch_hosts(self):
+        return self.fetch_distinct_column_values(ShellCommand.host)
+
+    def fetch_distinct_column_values(self, column):
         engine = create_engine(self.database)
         with Session(engine) as session:
-            query = select(
-                distinct(
-                    ShellCommand.host
-                )
-            )
-
+            query = select(distinct(column))
             results = session.execute(query).all()
-
         return [result[0] for result in results]
 
     def fetch_commands(self):
