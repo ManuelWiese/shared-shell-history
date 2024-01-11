@@ -159,12 +159,33 @@ class CommandHistory(App):
         self.filtered_commands = self.get_filtered_commands()
 
     def fetch_users(self):
+        """
+        Fetch and return a list of distinct usernames from the database.
+
+        Returns:
+            list: A list of unique usernames.
+        """
         return self.fetch_distinct_column_values(ShellCommand.user_name)
 
     def fetch_hosts(self):
+        """
+        Fetch and return a list of distinct hostnames from the database.
+
+        Returns:
+            list: A list of unique hostnames.
+        """
         return self.fetch_distinct_column_values(ShellCommand.host)
 
     def fetch_distinct_column_values(self, column):
+        """
+        Fetch and return a list of distinct values from a specified column in the database.
+
+        Args:
+            column (Column): The SQLAlchemy Column object to fetch distinct values from.
+
+        Returns:
+            list: A list of distinct values from the specified column.
+        """
         engine = create_engine(self.database)
         with Session(engine) as session:
             query = select(distinct(column))
