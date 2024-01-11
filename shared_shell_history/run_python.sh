@@ -51,4 +51,9 @@ run_python() {
 
     # Run the Python command with arguments
     "${venv_path}/bin/python" "$@"
+
+    local python_exit_status=$?
+
+    # Return the exit status of the Python command
+    return $python_exit_status
 }

@@ -56,6 +56,12 @@ source "${SHARED_SHELL_HISTORY_BASE_DIR}/run_python.sh"
 # Create table if it does not exist already
 run_python "${SHARED_SHELL_HISTORY_BASE_DIR}/create_table_if_not_exists.py" --database "${SHARED_SHELL_HISTORY_DB_URL}"
 
+# Check the exit status of the previous command
+if [ $? -ne 0 ]; then
+    echo "shared_shell_history: Table creation failed. Exiting..."
+    return 1
+fi
+
 # Helper functions to activate/deactivate command capture
 __enable_command_capture() {
     __command_capture_enabled="on"
