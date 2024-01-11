@@ -3,6 +3,13 @@
 # Define the target directory
 TARGET_DIR="$HOME/.shared_shell_history"
 
+# Check if the target directory already exists and is not empty
+if [ -d "$TARGET_DIR" ] && [ "$(ls -A "$TARGET_DIR")" ]; then
+    echo "Installation directory $TARGET_DIR already exists and is not empty."
+    echo "Exiting installation."
+    exit 1
+fi
+
 # Create the target directory if it doesn't exist
 mkdir -p "$TARGET_DIR"
 
