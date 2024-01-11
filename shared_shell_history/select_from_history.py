@@ -135,25 +135,27 @@ class CommandHistory(App):
     ]
 
     def __init__(self, database, tmp_file, user=None, host=None):
+        """
+        Initialize the CommandHistory instance.
+
+        Args:
+            database (str): The database connection string or path.
+            tmp_file (str): The path to the temporary file for command storage.
+            user (str, optional): User to initially filter the commands by.
+            host (str, optional): Host to initially filter the commands by.
+        """
         super().__init__()
         self.database = database
         self.tmp_file = tmp_file
+        self.search_string = ""
 
         self.commands = self.fetch_commands()
         self.usernames = self.fetch_users()
         self.hosts = self.fetch_hosts()
 
-        if user is None:
-            self.selected_usernames = self.usernames
-        else:
-            self.selected_usernames = [user]
+        self.selected_usernames = self.usernames if user is None else [user]
+        self.selected_hosts = self.hosts if host is None else [host]
 
-        if host is None:
-            self.selected_hosts = self.hosts
-        else:
-            self.selected_hosts = [host]
-
-        self.search_string = ""
         self.filtered_commands = self.get_filtered_commands()
 
     def fetch_users(self):
