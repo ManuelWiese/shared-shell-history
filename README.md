@@ -111,3 +111,28 @@ shared_shell_history_disable_capture
 
 The default keybinding to open the interactive search menu is `Ctrl+h`.
 You can customize this keybinding by modifying the `SHARED_SHELL_HISTORY_MENU_KEY` variable in the `~/.shared_shell_history/config.sh` file. You need to reload your shell after changing the keybinding.
+
+## Contributing
+
+Contributions to `shared-shell-history` are welcome and appreciated! Whether it's bug reports, feature requests, or code contributions, here's how you can contribute:
+
+### Reporting Bugs and Requesting Features
+
+- For bug reports and feature requests, please use the [Issues](https://github.com/ManuelWiese/shared-shell-history/issues) section of the GitHub repository.
+- Before creating a new issue, please check if it has already been reported or requested.
+
+### Code Contributions
+
+- If you're interested in contributing code, feel free to fork the repository and submit a pull request.
+- Please ensure your code follows the existing coding style and include any relevant tests.
+- For significant changes, please open an issue first to discuss what you would like to change.
+
+### Documentation
+
+- Improvements to documentation, examples, or README are also highly valued. If you spot typos or inaccuracies, or you have suggestions for better explanations, don't hesitate to contribute.
+
+### Community and Support
+
+- Join the community and contribute to the discussions. Your feedback and insights are important to the growth of `shared-shell-history`.
+
+Thank you for considering contributing to `shared-shell-history`. Every contribution, no matter how small, is valuable and helps make the tool better for everyone.
