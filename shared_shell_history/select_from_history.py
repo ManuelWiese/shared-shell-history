@@ -421,18 +421,38 @@ class CommandHistory(App):
         status_bar.update(self.get_status_string())
 
     def action_show_info(self):
+        """
+        Show detailed information about the selected command.
+
+        This method retrieves the currently selected command from the command_list_view 
+        and pushes an InfoScreen to display its details. It also sets maybe_delete_entry 
+        as the callback to handle potential deletion of the command.
+        """
         command_list_view = self.get_child_by_id(id="command_list_view")
         command = self.commands[command_list_view.index]
         self.push_screen(InfoScreen(command), self.maybe_delete_entry)
 
     def maybe_delete_entry(self, delete_entry):
+        """
+        Determine whether to delete the selected command entry.
+
+        Args:
+            delete_entry (bool): A flag indicating whether the entry should be deleted.
+        """
         if delete_entry:
             self.delete_entry()
 
     def action_delete_entry(self):
+        """
+        Delete the currently selected command entry.
+        This is typically bound to a key.
+        """
         self.delete_entry()
 
     def delete_entry(self):
+        """
+        Delete the selected command from both the UI and the database.
+        """
         command_list_view = self.get_child_by_id(id="command_list_view")
         index = command_list_view.index
         command = self.filtered_commands[index]
@@ -446,6 +466,12 @@ class CommandHistory(App):
         command_list_view.index = max(index - 1, 0)
 
     def delete_command_from_database(self, command):
+        """
+        Delete a command from the database.
+
+        Args:
+            command (ShellCommand): The command object to be deleted.
+        """
         engine = create_engine(self.database)
         with Session(engine) as session:
             delete_query = delete(ShellCommand).where(
@@ -454,6 +480,12 @@ class CommandHistory(App):
             session.commit()
 
     def delete_command_from_lists(self, command):
+        """
+        Remove a command from the internal lists used in the application.
+
+        Args:
+            command (ShellCommand): The command object to be removed.
+        """
         self.filtered_commands.remove(command)
         self.commands.remove(command)
 
