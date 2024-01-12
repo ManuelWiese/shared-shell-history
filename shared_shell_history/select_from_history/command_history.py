@@ -189,14 +189,14 @@ class CommandHistory(App):
 
         if set(self.usernames) != set(self.selected_usernames):
             strings.append(
-                f"Selected Users: [{', '.join(self.selected_usernames)}]"
+                f"Selected Users: \[{', '.join(self.selected_usernames)}]"
             )
         else:
             strings.append("Selected Users: [*]")
 
         if set(self.hosts) != set(self.selected_hosts):
             strings.append(
-                f"Selected Hosts: [{', '.join(self.selected_hosts)}]"
+                f"Selected Hosts: \[{', '.join(self.selected_hosts)}]"
             )
         else:
             strings.append("Selected Hosts: [*]")
