@@ -106,3 +106,8 @@ shared_shell_history_disable_capture
 
 - **Cross-Session Accessibility**: Commands entered in one session are instantly available in all others where `shared-shell-history` is active.
 - **Remote Sessions**: For remote terminals, install `shared-shell-history` on your remote machine to access your unified command history remotely.
+
+### Customizing Key Bindings (Optional)
+
+The default keybinding to open the interactive search menu is `Ctrl+h`.
+You can customize this keybinding by modifying the `SHARED_SHELL_HISTORY_MENU_KEY` variable in the `~/.shared_shell_history/config.sh` file. You need to reload your shell after changing the keybinding.
