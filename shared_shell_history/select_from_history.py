@@ -503,20 +503,21 @@ class CommandHistory(App):
         )
 
     def change_search_string(self, new_search_string):
+        """
+        Update the search string and refresh the application view.
+
+        Args:
+            new_search_string (str): The new search string input by the user.
+        """
         if new_search_string == self.search_string:
             return
 
         self.search_string = new_search_string
-
         self.filtered_commands = self.get_filtered_commands()
 
-        command_list_view = self.get_child_by_id(id="command_list_view")
-        command_list_view.clear()
-        command_list_view.extend(self.get_list_items())
-        command_list_view.index = 0
+        self.refresh_command_list_view()
 
-        status_bar = self.get_child_by_id(id="status_bar")
-        status_bar.update(self.get_status_string())
+        self.update_status_bar()
 
 
 if __name__ == "__main__":
