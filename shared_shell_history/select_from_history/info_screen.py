@@ -19,8 +19,7 @@ class InfoScreen(ModalScreen):
             yield Label(f"Time: {self.command.time}")
             yield Label(f"Command: {self.command.command}")
             with Container():
-                yield Button.success("Close", id="close")
-                yield Label("", id="spacer")
+                yield Button("Close", id="close")
                 yield Button.error("Delete", id="delete")
 
     @on(Button.Pressed)
