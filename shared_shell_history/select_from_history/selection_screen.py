@@ -20,6 +20,7 @@ class SelectionScreen(ModalScreen):
     BINDINGS = [
         Binding("a", "select_all()", "Select All"),
         Binding("o", "select_one()", "Select One"),
+        Binding("c", "confirm()", "Confirm Current Selection"),
     ]
 
     def __init__(self, title, values, currently_selected):
@@ -52,7 +53,7 @@ class SelectionScreen(ModalScreen):
         with Horizontal():
             yield Button("Select (a)ll", id="all")
             yield Button("Select (o)ne", id="one")
-            yield Button("OK", id="ok")
+            yield Button("(C)onfirm", id="confirm")
 
     def on_mount(self):
         """
@@ -72,9 +73,18 @@ class SelectionScreen(ModalScreen):
             self.action_select_all()
         elif event.button.id == "one":
             self.action_select_one()
-        elif event.button.id == "ok":
-            selected = self.query_one(SelectionList).selected
-            self.dismiss(selected)
+        elif event.button.id == "confirm":
+            self.confirm()
+
+    def confirm(self):
+        """
+        Finalize the selection and close the screen.
+
+        This method retrieves the currently selected items from the SelectionList widget and 
+        then uses the 'dismiss' method to close the SelectionScreen, returning the selected items.
+        """
+        selected = self.query_one(SelectionList).selected
+        self.dismiss(selected)
 
     def action_select_all(self):
         """
@@ -88,3 +98,12 @@ class SelectionScreen(ModalScreen):
         """
         self.query_one(SelectionList).deselect_all()
         self.query_one(SelectionList)._toggle_highlighted_selection()
+
+    def action_confirm(self):
+        """
+        Trigger the confirmation action.
+
+        This method is typically bound to a key in the UI and invokes the 'confirm' method 
+        to finalize the selection and close the screen.
+        """
+        self.confirm()
