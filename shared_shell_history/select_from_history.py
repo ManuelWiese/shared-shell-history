@@ -328,7 +328,8 @@ class CommandHistory(App):
         command = event.item.command.command
         with open(self.tmp_file, "w") as f:
             f.write(command)
-        exit()
+
+        self.action_quit()
 
     def action_quit(self):
         exit()
