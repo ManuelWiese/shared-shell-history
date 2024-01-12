@@ -37,6 +37,15 @@ Before installing, make sure you have:
 - Python 3.6 or higher with venv support (Install `python3-venv` on Ubuntu)
 - Bash shell, version 5.1 or higher recommended (lower versions might work but are not guaranteed)
 
+### Database Setup (Optional)
+
+`shared-shell-history` supports all databases compatible with SQLAlchemy. You can set up a database server of your choice (e.g., PostgreSQL, MySQL) and provide the database URI during installation. Tables are automatically created if they don't exist.
+
+I suggest using sqlite for testing `shared-shell-history` and move to a database server if you like using `shared-shell-history`.
+A sqlite database will automatically be created if you provide an sqlite-URI of the form `sqlite:////absolute/path/to/database.db`.
+To learn more about the supported databases: [SQLAlchemy - Engine Configuration](https://docs.sqlalchemy.org/en/20/core/engines.html)
+
+
 ### Installing from Source
 
 1. **Clone the Repository**:
@@ -46,16 +55,16 @@ Before installing, make sure you have:
    cd shared-shell-history
    ```
 2. **Run the Installation Script**:
-   Execute the installation script. This will set up `shared-shell-history` and modify your .bashrc file:
+   Execute the installation script. You can optionally provide a database URI as a parameter; if not provided, you'll be prompted to enter one, with a default suggestion of `sqlite:///~/.shared_shell_history/history.db` This will set up `shared-shell-history` and modify your .bashrc file.:
    ```bash
-   ./install.sh
+   ./install.sh [database-uri]
    ```
 3. **Reload Your Shell**:
    To apply the changes, reload your shell or:
    ```bash
    source ~/.bashrc
    ```
-   
+
 ### Uninstalling
 To uninstall `shared-shell-history`, navigate to the cloned repository directory, disable the command capture and run the `uninstall.sh` script. After that reload your shell.
 ```bash
