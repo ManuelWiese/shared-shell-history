@@ -317,6 +317,14 @@ class CommandHistory(App):
         return ", ".join(strings)
 
     def on_list_view_selected(self, event: ListView.Selected):
+        """
+        Handle the event when an item is selected from the ListView.
+
+        This method writes the selected command to a temporary file and then exits the application.
+
+        Args:
+            event (ListView.Selected): The selection event containing the selected item.
+        """
         command = event.item.command.command
         with open(self.tmp_file, "w") as f:
             f.write(command)
