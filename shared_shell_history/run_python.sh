@@ -49,10 +49,17 @@ run_python() {
         fi
     fi
 
+    # Set PYTHONPATH for this execution
+    local old_pythonpath="$PYTHONPATH"
+    export PYTHONPATH="$PYTHONPATH:${SHARED_SHELL_HISTORY_BASE_DIR}"
+
     # Run the Python command with arguments
     "${venv_path}/bin/python" "$@"
 
     local python_exit_status=$?
+
+    # Restore the original PYTHONPATH
+    export PYTHONPATH="$old_pythonpath"
 
     # Return the exit status of the Python command
     return $python_exit_status

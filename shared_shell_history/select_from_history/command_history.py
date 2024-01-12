@@ -1,126 +1,18 @@
 import re
 
-from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Center, Container, Horizontal
-from textual.screen import ModalScreen
-from textual.widgets import (
-    Button, Footer, Input,
-    Label, ListItem, ListView, SelectionList
-)
+from textual.widgets import Footer, Label, ListView
 
 from sqlalchemy import create_engine, delete, desc, distinct, select
 from sqlalchemy.orm import Session
 
+from .command_list_item import CommandListItem
+from .info_screen import InfoScreen
+from .search_screen import SearchScreen
+from .selection_screen import SelectionScreen
+
 from model import ShellCommand
-
-
-class CommandListItem(ListItem):
-    """
-    Custom list item widget for displaying a command.
-
-    Displays command information in a horizontal layout, with each part of the
-    command (user name, host, command text) styled separately via CSS.
-    """
-    def __init__(self, command):
-        super().__init__()
-        self.command = command
-
-    def compose(self):
-        with Horizontal():
-            yield Label(self.command.user_name, id="user_name")
-            yield Label(self.command.host, id="host")
-            yield Label(self.command.command, id="command")
-
-
-class InfoScreen(ModalScreen):
-    def __init__(self, command):
-        super().__init__()
-        self.command = command
-
-    def compose(self):
-        with Container():
-            yield Label(f"Id: {self.command.id}")
-            yield Label(f"User: {self.command.user_name}")
-            yield Label(f"Host: {self.command.host}")
-            yield Label(f"Path: {self.command.path}")
-            yield Label(f"Venv: {self.command.venv}")
-            yield Label(f"Time: {self.command.time}")
-            yield Label(f"Command: {self.command.command}")
-            with Container():
-                yield Button.success("Close", id="close")
-                yield Label("", id="spacer")
-                yield Button.error("Delete", id="delete")
-
-    @on(Button.Pressed)
-    def leave_modal_screen(self, event):
-        self.dismiss(event.button.id == "delete")
-
-
-class SelectionScreen(ModalScreen):
-    BINDINGS = [
-        Binding("a", "select_all()", "Select All"),
-        Binding("o", "select_one()", "Select One"),
-    ]
-
-    def __init__(self, title, values, currently_selected):
-        super().__init__()
-        self.title = title
-        self.values = values
-        self.currently_selected = currently_selected
-
-    def compose(self):
-        sorted_values = sorted(self.values)
-        selection_list_items = (
-            (value, value, value in self.currently_selected)
-            for value in sorted_values
-        )
-        yield SelectionList[str](
-            *selection_list_items
-        )
-        with Horizontal():
-            yield Button("Select (a)ll", id="all")
-            yield Button("Select (o)ne", id="one")
-            yield Button("OK", id="ok")
-
-    def on_mount(self):
-        self.query_one(SelectionList).border_title = self.title
-
-    @on(Button.Pressed)
-    def button_pressed(self, event):
-        if event.button.id == "all":
-            self.action_select_all()
-        elif event.button.id == "one":
-            self.action_select_one()
-        elif event.button.id == "ok":
-            selected = self.query_one(SelectionList).selected
-            self.dismiss(selected)
-
-    def action_select_all(self):
-        self.query_one(SelectionList).select_all()
-
-    def action_select_one(self):
-        self.query_one(SelectionList).deselect_all()
-        self.query_one(SelectionList)._toggle_highlighted_selection()
-
-
-class SearchScreen(ModalScreen):
-    def __init__(self, current_regex):
-        super().__init__()
-        self.current_regex = current_regex
-
-    def compose(self):
-        yield Input(placeholder="Search command...")
-
-    def on_mount(self):
-        self.query_one(Input).value = self.current_regex
-
-    @on(Input.Submitted)
-    def close(self, event):
-        self.dismiss(
-            self.query_one(Input).value
-        )
 
 
 class CommandHistory(App):
@@ -517,19 +409,3 @@ class CommandHistory(App):
         self.refresh_command_list_view()
 
         self.update_status_bar()
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--database", type=str, required=True)
-    parser.add_argument("--tmp_file", type=str, required=True)
-    parser.add_argument("--user", type=str, default=None)
-    arguments = parser.parse_args()
-
-    app = CommandHistory(
-        database=arguments.database,
-        user=arguments.user,
-        tmp_file=arguments.tmp_file
-    )
-    app.run()
