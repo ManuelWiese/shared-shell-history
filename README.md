@@ -72,3 +72,37 @@ cd path/to/cloned/shared-shell-history
 shared_shell_history_disable_capture
 ./uninstall.sh
 ```
+
+## Usage
+
+`shared-shell-history` automatically synchronizes your command history to a database, making it accessible across sessions and systems. Here's how to effectively use it:
+
+### Command Synchronization
+
+- **Automatic Sync**: Every command you execute in the shell is added to the database before execution. This includes long-running commands and even those executed before unexpected system crashes.
+
+### Enabling/Disabling Command Capture
+
+- **Disable Capture**: If you wish to stop recording commands temporarily, you can disable command capture:
+  ```bash
+  shared_shell_history_disable_capture
+  ```
+- **Enable Capture**: To resume command recording, enable command capture:
+  ```bash
+  shared_shell_history_enable_capture
+  ```
+
+### Interactive Search Menu
+
+- **Accessing the Menu**: Press **Ctrl+h** to open the interactive search menu.
+- **Features**:
+  - **Filter Commands**: You can filter the commands displayed in the menu by user, host and using regex strings.
+  - **Command Info**: Selecting a command displays detailed information, such as the execution path, virtual environment (if any) and the timestamp when the command was added to the database.
+- **Navigating the Menu**: Use the arrow keys to navigate through your command history in the menu.
+- **Selecting a Command**: Press Enter to select and load a command into your current shell session.
+- **Exiting the Menu**: Press 'q' to exit the menu and return to your shell.
+
+### Tips for Effective Use
+
+- **Cross-Session Accessibility**: Commands entered in one session are instantly available in all others where `shared-shell-history` is active.
+- **Remote Sessions**: For remote terminals, install `shared-shell-history` on your remote machine to access your unified command history remotely.
