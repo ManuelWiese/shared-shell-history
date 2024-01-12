@@ -460,10 +460,9 @@ class CommandHistory(App):
         self.delete_command_from_database(command)
         self.delete_command_from_lists(command)
 
-        command_list_view.clear()
-        command_list_view.extend(self.get_list_items())
-        # select the item above the deleted item
-        command_list_view.index = max(index - 1, 0)
+        # Refresh the command list view and adjust the selection
+        new_index = max(index - 1, 0)  # select the item above the deleted item
+        self.refresh_command_list_view(new_index)
 
     def delete_command_from_database(self, command):
         """
