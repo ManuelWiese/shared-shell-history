@@ -30,7 +30,7 @@ ask_for_value() {
 
 # Default values
 DEFAULT_DB_URL="sqlite:///$TARGET_DIR/history.db"
-DEFAULT_MENU_KEY="\C-b"
+DEFAULT_MENU_KEY="\C-h"
 
 # Check if the DB URL value is provided as an argument or ask for it
 DB_URL=${1:-$(ask_for_value "SHARED_SHELL_HISTORY_DB_URL" "$DEFAULT_DB_URL")}
