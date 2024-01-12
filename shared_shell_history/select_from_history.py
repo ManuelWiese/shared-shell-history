@@ -332,6 +332,11 @@ class CommandHistory(App):
         self.action_quit()
 
     def action_quit(self):
+        """
+        Exit the application.
+
+        This method is typically bound to a quit action or command within the application.
+        """
         exit()
 
     def action_select_user(self):
