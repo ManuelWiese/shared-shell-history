@@ -25,3 +25,41 @@ Whether you're switching between local and remote sessions or working across dif
 - **Open Source**: Dive into the source code, customize it, and contribute to the development of `shared-shell-history`.
 
 These features are geared towards making your command-line experience more productive and enjoyable, saving you time and effort in your day-to-day tasks.
+
+## Installation
+
+`shared-shell-history` is designed to enhance your Bash experience. Follow these steps to install it on your system:
+
+### Prerequisites
+
+Before installing, make sure you have:
+
+- Python 3.6 or higher with venv support (Install `python3-venv` on Ubuntu)
+- Bash shell, version 5.1 or higher recommended (lower versions might work but are not guaranteed)
+
+### Installing from Source
+
+1. **Clone the Repository**:
+   Clone `shared-shell-history` from GitHub:
+   ```bash
+   git clone https://github.com/ManuelWiese/shared-shell-history.git
+   cd shared-shell-history
+   ```
+2. **Run the Installation Script**:
+   Execute the installation script. This will set up `shared-shell-history` and modify your .bashrc file:
+   ```bash
+   ./install.sh
+   ```
+3. **Reload Your Shell**:
+   To apply the changes, reload your shell or:
+   ```bash
+   source ~/.bashrc
+   ```
+   
+### Uninstalling
+To uninstall `shared-shell-history`, navigate to the cloned repository directory, disable the command capture and run the `uninstall.sh` script. After that reload your shell.
+```bash
+cd path/to/cloned/shared-shell-history
+shared_shell_history_disable_capture
+./uninstall.sh
+```
