@@ -340,6 +340,14 @@ class CommandHistory(App):
         exit()
 
     def action_select_user(self):
+        """
+        Trigger an action to select users.
+
+        This method pushes a new SelectionScreen onto the application's screen stack.
+        The SelectionScreen is configured to allow the user to select one or more usernames.
+        Upon selection, `set_selected_users` is called to update the application state 
+        with the selected usernames.
+        """
         self.push_screen(
             SelectionScreen(
                 "Select user(s)",
@@ -350,19 +358,26 @@ class CommandHistory(App):
         )
 
     def set_selected_users(self, selected_usernames):
+        """
+        Set the selected users and update the views.
+
+        Args:
+            selected_usernames (list): The list of selected usernames.
+        """
         self.selected_usernames = selected_usernames
         self.filtered_commands = self.get_filtered_commands()
-
-        command_list_view = self.get_child_by_id(id="command_list_view")
-        command_list_view.clear()
-        command_list_view.extend(self.get_list_items())
-        command_list_view.index = 0
-
-        status_bar = self.get_child_by_id(id="status_bar")
-        status_bar.update(self.get_status_string())
-
+        self.refresh_command_list_view()
+        self.update_status_bar()
 
     def action_select_host(self):
+        """
+        Trigger an action to select hosts.
+
+        This method pushes a new SelectionScreen onto the application's screen stack.
+        The SelectionScreen is configured to allow the user to select one or more hosts.
+        Upon selection, `set_selected_hosts` is called to update the application state 
+        with the selected hosts.
+        """
         self.push_screen(
             SelectionScreen(
                 "Select host(s)",
@@ -373,14 +388,35 @@ class CommandHistory(App):
         )
 
     def set_selected_hosts(self, selected_hosts):
+        """
+        Set the selected hosts and update the views.
+
+        Args:
+            selected_hosts (list): The list of selected hosts.
+        """
         self.selected_hosts = selected_hosts
         self.filtered_commands = self.get_filtered_commands()
+        self.refresh_command_list_view()
+        self.update_status_bar()
 
+    def refresh_command_list_view(self, index=0):
+        """
+        Refresh the command list view with updated list items and set the
+        focus to a specific index.
+
+        Args:
+            index (int): The index of the item to be focused after refreshing.
+                Defaults to 0.
+        """
         command_list_view = self.get_child_by_id(id="command_list_view")
         command_list_view.clear()
         command_list_view.extend(self.get_list_items())
-        command_list_view.index = 0
+        command_list_view.index = index
 
+    def update_status_bar(self):
+        """
+        Update the status bar with the current status string.
+        """
         status_bar = self.get_child_by_id(id="status_bar")
         status_bar.update(self.get_status_string())
 
