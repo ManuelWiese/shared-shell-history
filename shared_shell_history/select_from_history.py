@@ -490,6 +490,13 @@ class CommandHistory(App):
         self.commands.remove(command)
 
     def action_search(self):
+        """
+        Initiate the action to perform a search.
+
+        This method pushes a SearchScreen onto the application's screen stack,
+        allowing the user to enter a search string. It sets change_search_string 
+        as the callback to handle the update of the search string.
+        """
         self.push_screen(
             SearchScreen(self.search_string),
             self.change_search_string
