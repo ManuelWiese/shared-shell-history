@@ -24,5 +24,5 @@ class InfoScreen(ModalScreen):
                 yield Button.error("Delete", id="delete")
 
     @on(Button.Pressed)
-    def leave_modal_screen(self, event):
+    def leave_screen(self, event):
         self.dismiss(event.button.id == "delete")
