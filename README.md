@@ -1,6 +1,6 @@
 # Shared Shell History
 
-![gif](https://imgur.com/a/gPMGfAy)
+![gif](https://raw.githubusercontent.com/ManuelWiese/shared-shell-history/main/shared_shell_history_showcase.gif)
 
 ## Introduction
 
