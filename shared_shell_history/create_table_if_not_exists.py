@@ -2,7 +2,7 @@ import argparse
 
 from sqlalchemy import create_engine
 
-from model import Base
+from shared_shell_history_model import Base
 
 
 def main():

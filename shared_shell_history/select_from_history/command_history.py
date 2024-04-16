@@ -12,7 +12,7 @@ from .info_screen import InfoScreen
 from .search_screen import SearchScreen
 from .selection_screen import SelectionScreen
 
-from model import ShellCommand
+from shared_shell_history_model import ShellCommand
 
 
 class CommandHistory(App):

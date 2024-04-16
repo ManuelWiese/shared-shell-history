@@ -3,7 +3,7 @@ import argparse
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from model import ShellCommand
+from shared_shell_history_model import ShellCommand
 
 
 def main():
