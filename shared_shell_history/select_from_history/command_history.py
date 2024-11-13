@@ -322,7 +322,7 @@ class CommandHistory(App):
         as the callback to handle potential deletion of the command.
         """
         command_list_view = self.get_child_by_id(id="command_list_view")
-        command = self.commands[command_list_view.index]
+        command = self.filtered_commands[command_list_view.index]
         self.push_screen(InfoScreen(command), self.maybe_delete_entry)
 
     def maybe_delete_entry(self, delete_entry):
